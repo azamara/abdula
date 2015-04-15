@@ -47,23 +47,23 @@ void loop() {
   // Must send in temp in Fahrenheit!
   float hi = dht.computeHeatIndex(f, h);
 
-  Serial.print("{ humidity: "); 
+  Serial.print("{ \"humidity\": "); 
   Serial.print(h);
   Serial.print(", ");
-  Serial.print("temperature: "); 
+  Serial.print("\"temperature\": "); 
   Serial.print(t);
   Serial.print(", ");
   
   
   // Sound Sensor
   int sound = analogRead(A0);
-  Serial.print("sound: "); 
+  Serial.print("\"sound\": "); 
   Serial.print(sound);
   Serial.print(", ");
   
   // Vibration Sensor
   int vibration = digitalRead(4);
-  Serial.print("vibration: "); 
+  Serial.print("\"vibration\": "); 
   Serial.print(vibration);
   
   Serial.println("}");
