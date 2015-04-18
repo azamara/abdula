@@ -1,6 +1,6 @@
 #include <DHT.h>
 
-#define DHTPIN 2     // what pin we're connected to
+#define DHTPIN 7     // what pin we're connected to
 
 // Uncomment whatever type you're using!
 #define DHTTYPE DHT11   // DHT 11 
@@ -33,7 +33,7 @@ void setup() {
 
 void loop() {
   // Wait a few seconds between measurements.
-  delay(1000);
+  delay(10000);
 
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
