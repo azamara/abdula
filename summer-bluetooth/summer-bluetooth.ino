@@ -1,3 +1,6 @@
+/***
+DHT setting
+***/
 #include <DHT.h>
 
 #define DHTPIN 7     // what pin we're connected to
@@ -25,16 +28,27 @@ DHT dht(DHTPIN, DHTTYPE);
 // Example to initialize DHT sensor for Arduino Due:
 //DHT dht(DHTPIN, DHTTYPE, 30);
 
+/***
+HC-05 Bluetooth setting
+***/
+#include <SoftwareSerial.h>
+SoftwareSerial bt(3, 2); // tx, rx
+//HC05 btSerial = HC05(2, 5, 0, 1); // cmd, state, rx, tx
+static char dtostrfbuffer[15];
+
 void setup() {
-  Serial.begin(9600); 
- 
+  Serial.begin(9600);
+  bt.begin(9600); // 블루투스를 사용하기 위해 초기화
+
+  // DHT
   dht.begin();
 }
 
 void loop() {
   // Wait a few seconds between measurements.
-  delay(10000);
+  delay(1000);
 
+  // DHT
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
   float h = dht.readHumidity();
@@ -47,26 +61,26 @@ void loop() {
   // Must send in temp in Fahrenheit!
   float hi = dht.computeHeatIndex(f, h);
 
-  Serial.print("{ \"humidity\": "); 
-  Serial.print(h);
-  Serial.print(", ");
-  Serial.print("\"temperature\": "); 
-  Serial.print(t);
-  Serial.print(", ");
-  
-  
   // Sound Sensor
-  int sound = analogRead(A0);
-  Serial.print("\"sound\": "); 
-  Serial.print(sound);
-  Serial.print(", ");
-  
+  float sound = analogRead(A0);
+
   // Vibration Sensor
-  int vibration = digitalRead(4);
-  Serial.print("\"vibration\": "); 
-  Serial.print(vibration);
+  float vibration = digitalRead(4);
+
+  // HC-05
+  bt.write("{ \"humidity\": ");
+  bt.write(dtostrf(h, 0, 2, dtostrfbuffer));
   bt.write(", ");
-  bt.write("\"location\": 1");
-  
-  Serial.println("}");
+  bt.write("\"temperature\": ");
+  bt.write(dtostrf(t, 0, 2, dtostrfbuffer));
+  bt.write(", ");
+  bt.write("\"sound\": ");
+  bt.write(dtostrf(sound, 0, 2, dtostrfbuffer));
+  bt.write(", ");
+  bt.write("\"vibration\": ");
+  bt.write(dtostrf(vibration, 0, 2, dtostrfbuffer));
+  bt.write(", ");
+  bt.write("\"location\": 2");
+  bt.write("}\n");
 }
+
