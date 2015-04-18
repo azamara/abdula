@@ -33,7 +33,7 @@ void setup() {
 
 void loop() {
   // Wait a few seconds between measurements.
-  delay(10000);
+  delay(1000);
 
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
@@ -65,8 +65,8 @@ void loop() {
   int vibration = digitalRead(4);
   Serial.print("\"vibration\": "); 
   Serial.print(vibration);
-  bt.write(", ");
-  bt.write("\"location\": 1");
+  Serial.print(", ");
+  Serial.print("\"location\": 1");
   
   Serial.println("}");
 }
