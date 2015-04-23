@@ -56,13 +56,13 @@ void loop() {
   
   
   // Sound Sensor
-  int sound = analogRead(A0);
+  float sound = analogRead(A0) - 10;
   Serial.print("\"sound\": "); 
   Serial.print(sound);
   Serial.print(", ");
   
   // Vibration Sensor
-  int vibration = digitalRead(4);
+  float vibration = digitalRead(4);
   Serial.print("\"vibration\": "); 
   Serial.print(vibration);
   Serial.print(", ");
