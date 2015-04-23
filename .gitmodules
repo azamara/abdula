@@ -1,3 +1,6 @@
 [submodule "submodules/DHT-sensor-library"]
 	path = submodules/DHT-sensor-library
 	url = https://github.com/adafruit/DHT-sensor-library
+[submodule "submodules/arduino-ESP8266"]
+	path = submodules/arduino-ESP8266
+	url = https://github.com/Diaoul/arduino-ESP8266.git
