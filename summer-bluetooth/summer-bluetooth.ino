@@ -36,17 +36,35 @@ SoftwareSerial bt(3, 2); // tx, rx
 //HC05 btSerial = HC05(2, 5, 0, 1); // cmd, state, rx, tx
 static char dtostrfbuffer[15];
 
+/***
+GP2Y1010AU0F setting
+***/
+int measurePin = 1; //Connect dust sensor to Arduino A0 pin
+int ledPower = 8;   //Connect 3 led driver pins of dust sensor to Arduino D2
+  
+int samplingTime = 280;
+int deltaTime = 40;
+int sleepTime = 9680;
+  
+float voMeasured = 0;
+float calcVoltage = 0;
+float dustDensity = 0;
+
 void setup() {
   Serial.begin(9600);
   bt.begin(9600); // 블루투스를 사용하기 위해 초기화
 
   // DHT
   dht.begin();
+  
+  // GP2Y1010AU0
+  pinMode(ledPower,OUTPUT);
 }
 
 void loop() {
+  String output = "";
   // Wait a few seconds between measurements.
-  delay(3000);
+  // delay(3000);
 
   // DHT
   // Reading temperature or humidity takes about 250 milliseconds!
@@ -61,31 +79,64 @@ void loop() {
   // Must send in temp in Fahrenheit!
   float hi = dht.computeHeatIndex(f, h);
 
-  Serial.print("{ \"humidity\": "); 
-  Serial.print(h);
-  Serial.print(", ");
-  Serial.print("\"temperature\": "); 
-  Serial.print(t);
-  Serial.print(", ");
-  
-  
+  output += "{ \"location\": 2, \"humidity\": "; 
+  output += h;
+  output += ", ";
+  output += "\"temperature\": "; 
+  output += t;
+  output += ", ";
+ 
   // Sound Sensor
   int sound = analogRead(A0);
-  Serial.print("\"sound\": "); 
-  Serial.print(sound);
-  Serial.print(", ");
+  output += "\"sound\": "; 
+  output += sound - 50;
+  output += ", ";
   
   // Vibration Sensor
   int vibration = digitalRead(4);
-  Serial.print("\"vibration\": "); 
-  Serial.print(vibration);
-  Serial.print(", ");
-  Serial.print("\"location\": 2");
-  
-  Serial.println("}");
+  output += "\"vibration\": "; 
+  output += vibration;
 
+
+  // GP2Y1010AU0
+  digitalWrite(ledPower,LOW); // power on the LED
+  delayMicroseconds(samplingTime);
+  
+  voMeasured = analogRead(measurePin); // read the dust value
+  
+  delayMicroseconds(deltaTime);
+  digitalWrite(ledPower,HIGH); // turn the LED off
+  delayMicroseconds(sleepTime);
+  
+  // 0 - 5V mapped to 0 - 1023 integer values
+  // recover voltage
+  calcVoltage = voMeasured * (5.0 / 1024.0);
+  
+  // linear eqaution taken from http://www.howmuchsnow.com/arduino/airquality/
+  // Chris Nafis (c) 2012
+  dustDensity = 0.17 * calcVoltage - 0.1;
+  
+//  Serial.print("Raw Signal Value (0-1023): ");
+//  Serial.print(voMeasured);
+//  
+//  Serial.print(" - Voltage: ");
+//  Serial.print(calcVoltage);
+//  
+//  Serial.print(" - Dust Density: ");
+//  Serial.println(dustDensity); // unit: mg/m3
+  dustDensity = dustDensity * 1000; // unit: ug/m3
+  delay(1000);
+  
+  output += ", ";
+  output += "\"dust\": "; 
+  output += dustDensity;
+  
+  output += "}";
+  
+  Serial.println(output);
+  
   // HC-05
-  bt.write("{ \"humidity\": ");
+  bt.write("{ \"location\": 2, \"humidity\": ");
   bt.write(dtostrf(h, 0, 2, dtostrfbuffer));
   bt.write(", ");
   bt.write("\"temperature\": ");
@@ -97,7 +148,8 @@ void loop() {
   bt.write("\"vibration\": ");
   bt.write(dtostrf(vibration, 0, 2, dtostrfbuffer));
   bt.write(", ");
-  bt.write("\"location\": 2");
+  bt.write("\"dust\": ");
+  bt.write(dtostrf(dustDensity, 0, 2, dtostrfbuffer));
   bt.write("}\n");
 }
 
