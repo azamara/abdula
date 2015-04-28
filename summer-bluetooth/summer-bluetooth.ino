@@ -1,6 +1,3 @@
-/***
-DHT setting
-***/
 #include <DHT.h>
 
 #define DHTPIN 7     // what pin we're connected to
