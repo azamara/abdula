@@ -84,9 +84,9 @@ void loop() {
   output += ", ";
  
   // Sound Sensor
-  int sound = analogRead(A0);
+  int sound = analogRead(A0) - 50;
   output += "\"sound\": "; 
-  output += sound - 50;
+  output += sound;
   output += ", ";
   
   // Vibration Sensor
@@ -140,10 +140,10 @@ void loop() {
   bt.write(dtostrf(t, 0, 2, dtostrfbuffer));
   bt.write(", ");
   bt.write("\"sound\": ");
-  bt.write(dtostrf(sound, 0, 2, dtostrfbuffer));
+  bt.write(dtostrf(sound, 0, 0, dtostrfbuffer));
   bt.write(", ");
   bt.write("\"vibration\": ");
-  bt.write(dtostrf(vibration, 0, 2, dtostrfbuffer));
+  bt.write(dtostrf(vibration, 0, 0, dtostrfbuffer));
   bt.write(", ");
   bt.write("\"dust\": ");
   bt.write(dtostrf(dustDensity, 0, 2, dtostrfbuffer));
