@@ -4,3 +4,6 @@
 [submodule "submodules/arduino-ESP8266"]
 	path = submodules/arduino-ESP8266
 	url = https://github.com/Diaoul/arduino-ESP8266.git
+[submodule "submodules/aoabook_Arduino"]
+	path = submodules/aoabook_Arduino
+	url = https://github.com/aoabook/Arduino
