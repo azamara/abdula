@@ -106,14 +106,13 @@ void loop() {
   
   // 0 - 5V mapped to 0 - 1023 integer values
   // recover voltage
-  calcVoltage = (voMeasured * 0.0049);
-  calcVoltage = voMeasured * (5.0 / 1024.0);
+  calcVoltage = voMeasured * (5 / 1024.0);  
   
   // linear eqaution taken from http://www.howmuchsnow.com/arduino/airquality/
   // Chris Nafis (c) 2012
-  dustDensity = 0.17 * calcVoltage - 0.1;
-  dustDensity = dustDensity <= 0 ? 0 : dustDensity;
+  dustDensity = 0.17 * calcVoltage - 0.1; // unit: mg/m3
   dustDensity = dustDensity * 1000; // unit: ug/m3
+  dustDensity = dustDensity >= 0 ? dustDensity : 0;
   
   output += ", ";
   output += "\"dust\": "; 
@@ -122,7 +121,7 @@ void loop() {
   output += "}";
   
   Serial.println(output);
-  delay(10000);
+  delay(1000);
   
   // HC-05
   bt.write("{ \"location\": 2, \"humidity\": ");
