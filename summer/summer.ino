@@ -46,13 +46,12 @@ void setup() {
   dht.begin();
   
   // GP2Y1010AU0
-  pinMode(ledPower,OUTPUT);
+  pinMode(ledPower, OUTPUT);
 }
 
 void loop() {
   String output = "";
   // Wait a few seconds between measurements.
-  // delay(3000);
 
   // DHT
   // Reading temperature or humidity takes about 250 milliseconds!
@@ -67,7 +66,7 @@ void loop() {
   // Must send in temp in Fahrenheit!
   float hi = dht.computeHeatIndex(f, h);
 
-  output += "{ \"location\": 1, \"humidity\": "; 
+  output += "{ \"location\": 2, \"humidity\": "; 
   output += h;
   output += ", ";
   output += "\"temperature\": "; 
@@ -75,9 +74,9 @@ void loop() {
   output += ", ";
  
   // Sound Sensor
-  int sound = analogRead(A0);
+  int sound = analogRead(A0) - 40;
   output += "\"sound\": "; 
-  output += sound - 70;
+  output += sound;
   output += ", ";
   
   // Vibration Sensor
@@ -98,21 +97,14 @@ void loop() {
   
   // 0 - 5V mapped to 0 - 1023 integer values
   // recover voltage
-  calcVoltage = voMeasured * (5.0 / 1024.0);
+  // with BT 3.5v, without BT 4.5v
+  calcVoltage = voMeasured * (4.5 / 1024.0);  
   
   // linear eqaution taken from http://www.howmuchsnow.com/arduino/airquality/
   // Chris Nafis (c) 2012
-  dustDensity = 0.17 * calcVoltage - 0.1;
-  
-  Serial.print("Raw Signal Value (0-1023): ");
-  Serial.print(voMeasured);
-  
-  Serial.print(" - Voltage: ");
-  Serial.print(calcVoltage);
-  
-  Serial.print(" - Dust Density: ");
-  Serial.println(dustDensity); // unit: mg/m3
+  dustDensity = 0.17 * calcVoltage - 0.1; // unit: mg/m3
   dustDensity = dustDensity * 1000; // unit: ug/m3
+  dustDensity = dustDensity >= 0 ? dustDensity : 0;
   
   output += ", ";
   output += "\"dust\": "; 
@@ -121,5 +113,6 @@ void loop() {
   output += "}";
   
   Serial.println(output);
-  delay(1000);
+  delay(10000);
 }
+

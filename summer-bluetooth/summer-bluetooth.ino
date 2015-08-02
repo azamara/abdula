@@ -121,7 +121,7 @@ void loop() {
   output += "}";
   
   Serial.println(output);
-  delay(1000);
+  delay(10000);
   
   // HC-05
   bt.write("{ \"location\": 2, \"humidity\": ");
